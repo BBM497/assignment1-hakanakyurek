@@ -1,6 +1,8 @@
 import os
 import enum
 
+punct = ':;,-()[]'
+token_punct = '.!?'
 
 class Label(enum.Enum):
     HAMILTON = 0
@@ -88,3 +90,11 @@ def filter_stopwords(dataset):
         temp_dataset.append(' '.join(temp))
 
     return temp_dataset
+
+
+def filter_punctuation(dataset):
+
+    for data in dataset:
+
+        data.translate(None, punct)
+        data.translate(None, token_punct)
