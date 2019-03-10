@@ -14,7 +14,7 @@ class BoW:
         self.start_token = '<s>'
         self.end_token = '</s>'
 
-    def bow_unigram(self, labels, dataset=None):
+    def train(self, labels, dataset=None):
         '''
         :param labels: label array for the dataset, each element should be Label enum type.
         :param dataset: 2D array of strings
@@ -51,4 +51,3 @@ class BoW:
         for i in self.word_count:
             wc = self.word_count[i]
             self.priors[i] = wc / sum(self.word_count)
-
