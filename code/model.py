@@ -35,7 +35,11 @@ class BoW:
         return temp_dataset
 
     def bow_unigram(self, labels, dataset=None):
-
+        '''
+        :param labels: label array for the dataset, each element should be Label enum type.
+        :param dataset: 2D array of strings
+        :return: returns bag
+        '''
         dataset = dataset or []
         unique_label_count = len(set(labels))
         self.word_count = [0] * unique_label_count
@@ -44,11 +48,11 @@ class BoW:
         for i in range(len(dataset)):
 
             data = dataset[i]
-            label = labels[i]
+            label = labels[i].value
 
-            self.word_count[label] += len(data.split(" "))
+            self.word_count[label] += len(data.split(' '))
 
-            for word in data:
+            for word in data.split(' '):
                 self.construct(word, label, unique_label_count)
 
         return self.bag
