@@ -35,4 +35,4 @@ def read(path=''):
 
         file.close()
 
-    return train_dataset, test_dataset
+    return train_dataset, train_labels, test_dataset, test_labels
