@@ -57,36 +57,24 @@ def read(path=''):
     return train_dataset, train_labels, test_dataset, test_labels
 
 
-def pre_process(dataset, stem=False, n_gram=1):
+def pre_process(dataset, n_gram=1):
     """
     Applies preprocessing to the dataset: stopword removal, stemming, and lowercase.
     :param dataset: 2D array of string
-    :param stem: enable stemming or not
     :param n_gram: N-gram value
     :return: preprocessed dataset
     """
 
     x = (n_gram - 1)
 
-    for i in range(len(dataset)): dataset[i] = dataset[i].lower()
-
-    if stem:
-        from nltk.stem import LancasterStemmer
-        stemmer = LancasterStemmer()
+    for i in range(len(dataset)):
+        dataset[i] = dataset[i].lower()
 
     dataset = filter_stopwords(dataset)
     dataset = filter_punctuation(dataset, x)
 
     for i in range(len(dataset)):
-        temp = ''
-        if stem:
-            for word in dataset[i].split(' '):
-                # Apply stem if initialized
-                temp += stemmer.stem(word) + ' '
-            temp = start_token * x + temp + end_token * x
-        else:
-            temp = start_token * x + dataset[i] + end_token * x
-        dataset[i] = temp
+        dataset[i] = start_token * x + dataset[i] + end_token * x
 
     return dataset
 
