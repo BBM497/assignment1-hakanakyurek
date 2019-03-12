@@ -1,8 +1,25 @@
 import os
 import enum
 
-punct = ':;,-()[]'
-token_punct = '.!?'
+start_token = ' _START_ '
+end_token = ' _END_ '
+
+punctuations = {'!': start_token + '!' + end_token,
+                '"': start_token + '"' + end_token,
+                '&': start_token + '&' + end_token,
+                ',': start_token + ',' + end_token,
+                '.': start_token + '.' + end_token,
+                ':': start_token + ':' + end_token,
+                ';': start_token + ';' + end_token,
+                '?': start_token + '?' + end_token,
+                '[': start_token + '[' + end_token,
+                ']': start_token + ']' + end_token,
+                ')': start_token + '(' + end_token,
+                '(': start_token + ')' + end_token,
+                '{': start_token + '{' + end_token,
+                '}': start_token + '}' + end_token,
+}
+
 
 class Label(enum.Enum):
     HAMILTON = 0
@@ -47,10 +64,12 @@ def pre_process(dataset, stem=False):
     :param stem: enable stemming or not
     :return: preprocessed dataset
     '''
-    from nltk.stem import LancasterStemmer
-    stemmer = LancasterStemmer()
+    if stem:
+        from nltk.stem import LancasterStemmer
+        stemmer = LancasterStemmer()
 
     dataset = filter_stopwords(dataset)
+    dataset = filter_punctuation(dataset)
 
     temp_dataset = []
 
@@ -94,7 +113,9 @@ def filter_stopwords(dataset):
 
 def filter_punctuation(dataset):
 
-    for data in dataset:
+    trantab = str.maketrans(punctuations)
+    for i in range(len(dataset)):
 
-        data.translate(None, punct)
-        data.translate(None, token_punct)
+        dataset[i] = dataset[i].translate(trantab)
+        pass
+    return dataset
