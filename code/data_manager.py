@@ -57,11 +57,12 @@ def read(path=''):
     return train_dataset, train_labels, test_dataset, test_labels
 
 
-def pre_process(dataset, n_gram=1):
+def pre_process(dataset, n_gram=1, remove_stopwords=False):
     """
     Applies preprocessing to the dataset: stopword removal, stemming, and lowercase.
     :param dataset: 2D array of string
     :param n_gram: N-gram value
+    :param remove_stopwords: remove stopwords flag
     :return: preprocessed dataset
     """
 
@@ -70,7 +71,8 @@ def pre_process(dataset, n_gram=1):
     for i in range(len(dataset)):
         dataset[i] = dataset[i].lower()
 
-    dataset = filter_stopwords(dataset)
+    if remove_stopwords:
+        dataset = filter_stopwords(dataset)
     dataset = filter_punctuation(dataset, x)
 
     for i in range(len(dataset)):
