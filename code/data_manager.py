@@ -71,6 +71,8 @@ def pre_process(dataset, n_gram=1, remove_stopwords=False):
     for i in range(len(dataset)):
         dataset[i] = dataset[i].lower()
 
+    dataset = filter_shortform(dataset)
+
     if remove_stopwords:
         dataset = filter_stopwords(dataset)
     dataset = filter_punctuation(dataset, x)
@@ -117,4 +119,15 @@ def filter_punctuation(dataset, x):
 
         dataset[i] = dataset[i].translate(trantab)
         pass
+    return dataset
+
+
+def filter_shortform(dataset):
+
+    import short_form
+    a = short_form.short_all
+    for i in range(len(dataset)):
+        for key in short_form.short_all:
+            dataset[i] = dataset[i].replace(key, short_form.short_all[key])
+
     return dataset
