@@ -4,21 +4,21 @@ import enum
 start_token = ' _START_ '
 end_token = ' _END_ '
 
-punctuations = {'!': start_token + '!' + end_token,
-                '"': start_token + '"' + end_token,
-                '&': start_token + '&' + end_token,
-                ',': start_token + ',' + end_token,
-                '.': start_token + '.' + end_token,
-                ':': start_token + ':' + end_token,
-                ';': start_token + ';' + end_token,
-                '?': start_token + '?' + end_token,
-                '[': start_token + '[' + end_token,
-                ']': start_token + ']' + end_token,
-                ')': start_token + '(' + end_token,
-                '(': start_token + ')' + end_token,
-                '{': start_token + '{' + end_token,
-                '}': start_token + '}' + end_token,
-}
+punctuations = {'!': '!',
+                '"': '"',
+                '&': '&',
+                ',': ',',
+                '.': '.',
+                ':': ':',
+                ';': ';',
+                '?': '?',
+                '[': '[',
+                ']': ']',
+                ')': '(',
+                '(': ')',
+                '{': '{',
+                '}': '}',
+                }
 
 
 class Label(enum.Enum):
@@ -57,42 +57,46 @@ def read(path=''):
     return train_dataset, train_labels, test_dataset, test_labels
 
 
-def pre_process(dataset, stem=False):
-    '''
+def pre_process(dataset, stem=False, n_gram=1):
+    """
     Applies preprocessing to the dataset: stopword removal, stemming, and lowercase.
     :param dataset: 2D array of string
     :param stem: enable stemming or not
+    :param n_gram: N-gram value
     :return: preprocessed dataset
-    '''
+    """
+
+    x = (n_gram - 1)
+
+    for i in range(len(dataset)): dataset[i] = dataset[i].lower()
+
     if stem:
         from nltk.stem import LancasterStemmer
         stemmer = LancasterStemmer()
 
     dataset = filter_stopwords(dataset)
-    dataset = filter_punctuation(dataset)
+    dataset = filter_punctuation(dataset, x)
 
-    temp_dataset = []
-
-    for data in dataset:
-        temp_data = []
-        data = data.lower()
+    for i in range(len(dataset)):
+        temp = ''
         if stem:
-            for word in data.split(' '):
+            for word in dataset[i].split(' '):
                 # Apply stem if initialized
-                temp_data.append(stemmer.stem(word))
+                temp += stemmer.stem(word) + ' '
+            temp = start_token * x + temp + end_token * x
         else:
-            temp_data = data
-        temp_dataset.append(temp_data)
+            temp = start_token * x + dataset[i] + end_token * x
+        dataset[i] = temp
 
-    return temp_dataset
+    return dataset
 
 
 def filter_stopwords(dataset):
-    '''
+    """
     Filter stopwords in the given dataset.
     :param dataset: 2D array of string
     :return: return the filtered dataset
-    '''
+    """
     from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
     temp_dataset = []
 
@@ -111,7 +115,12 @@ def filter_stopwords(dataset):
     return temp_dataset
 
 
-def filter_punctuation(dataset):
+def filter_punctuation(dataset, x):
+
+    if x != 0:
+        for key in punctuations.keys(): punctuations[key] = x * start_token + punctuations[key] + x * end_token
+    else:
+        for key in punctuations.keys(): punctuations[key] = ' ' + punctuations[key]
 
     trantab = str.maketrans(punctuations)
     for i in range(len(dataset)):
