@@ -1,8 +1,3 @@
-from collections import defaultdict
-from sklearn.feature_extraction.text import CountVectorizer
-import numpy as np
-import math
-
 
 class BoW:
 
@@ -11,13 +6,12 @@ class BoW:
         self.priors = []
         self.word_count = []
 
-        self.start_token = '<s>'
-        self.end_token = '</s>'
-
-    def train(self, labels, dataset=None):
+    def train(self, labels, dataset=None, n_gram=1):
         '''
+        Train the model.
         :param labels: label array for the dataset, each element should be Label enum type.
         :param dataset: 2D array of strings
+        :param n_gram: N-gram value
         :return: returns bag
         '''
         dataset = dataset or []
@@ -32,17 +26,36 @@ class BoW:
 
             self.word_count[label] += len(data.split(' '))
 
-            for word in data.split(' '):
-                self.construct(word, label, unique_label_count)
+            data = list(filter(None, data.split(' ')))
+
+            for j in range(len(data) - (n_gram - 1)):
+                if n_gram != 1:
+                    condition = ' '.join(data[j:j + n_gram - 1])
+                    word = data[j + n_gram - 1]
+                else:
+                    condition = data[j + n_gram - 1]
+                    word = None
+                self.construct(word, condition, label, unique_label_count)
 
         return self.bag
 
-    def construct(self, word, label, unique_label_count):
+    def construct(self, word, condition, label, unique_label_count):
+
+        bag = self.bag
+
         # If not in BoW, add it to it
-        if word not in self.bag:
-            self.bag[word] = {k: 0 for k in range(unique_label_count)}
+        if condition not in bag:
+            bag[condition] = {k: 0 for k in range(unique_label_count)}
+            bag[condition]['next'] = {}
+
+        if word is not None:
+            if word not in bag[condition]['next']:
+                bag[condition]['next'][word] = 0
+            else:
+                bag[condition]['next'][word] += 1
+
         # Increase frequency
-        self.bag[word][label] += 1
+        bag[condition][label] += 1
 
     def set_priors(self):
 
