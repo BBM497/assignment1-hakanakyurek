@@ -110,7 +110,7 @@ def filter_stopwords(dataset):
 def filter_punctuation(dataset, x):
 
     if x != 0:
-        for key in punctuations.keys(): punctuations[key] = x * start_token + punctuations[key] + x * end_token
+        for key in punctuations.keys(): punctuations[key] = x * end_token + punctuations[key] + x * start_token
     else:
         for key in punctuations.keys(): punctuations[key] = ' ' + punctuations[key]
 
