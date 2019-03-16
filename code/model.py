@@ -1,4 +1,5 @@
 import math
+from data_manager import Label
 
 
 class BoW:
@@ -6,16 +7,15 @@ class BoW:
     def __init__(self):
         self.bag = {}
         self.priors = []
-        self.word_count = []
+        self.word_count = 0
         self.n_gram = 1
 
     def __str__(self, *args, **kwargs):
-        print("BoW model: n-gram:%, unique words in the bag:%".format(self.n_gram, len(self.bag.keys())))
+        print("BoW model: n-gram: {}, unique words in the bag: {}".format(self.n_gram, len(self.bag.keys())))
 
-    def train(self, labels, dataset=None, n_gram=1):
+    def train(self, dataset=None, n_gram=1):
         """
         Train the model.
-        :param labels: label array for the dataset, each element should be Label enum type.
         :param dataset: 2D array of strings
         :param n_gram: N-gram value
         :return: returns bag
@@ -23,16 +23,13 @@ class BoW:
         self.n_gram = n_gram
 
         dataset = dataset or []
-        unique_label_count = len(set(labels))
-        self.word_count = [0] * unique_label_count
 
         # Loop through the data
         for i in range(len(dataset)):
 
             data = dataset[i]
-            label = labels[i].value
 
-            self.word_count[label] += len(data.split(' '))
+            self.word_count += len(data.split(' '))
 
             data = list(filter(None, data.split(' ')))
 
@@ -43,17 +40,17 @@ class BoW:
                 else:
                     condition = data[j + n_gram - 1]
                     word = None
-                self._construct(word, condition, label, unique_label_count)
+                self._construct(word, condition)
 
         return self.bag
 
-    def _construct(self, word, condition, label, unique_label_count):
+    def _construct(self, word, condition):
 
         bag = self.bag
 
         # If not in BoW, add it to it
         if condition not in bag:
-            bag[condition] = {k: 0 for k in range(unique_label_count)}
+            bag[condition] = {}
             bag[condition]['count'] = 0
             bag[condition]['next'] = {}
 
@@ -64,16 +61,7 @@ class BoW:
                 bag[condition]['next'][word] += 1
 
         # Increase frequency
-        bag[condition][label] += 1
         bag[condition]['count'] += 1
-
-    def set_priors(self):
-
-        self.priors = [0] * len(self.word_count)
-
-        for i in self.word_count:
-            wc = self.word_count[i]
-            self.priors[i] = wc / sum(self.word_count)
 
     def probability(self, numerator, denominator):
         probability = math.log10((numerator + 1) / (denominator + len(self.bag.keys())))
@@ -102,4 +90,12 @@ class BoW:
             else:
                 probability_of_doc += self.probability(p_count, c_count)
 
-        pass
+        return probability_of_doc
+
+    def test(self, dataset):
+
+        predictions = []
+        for data in dataset:
+            predictions.append(self.predict(data))
+
+        return predictions
