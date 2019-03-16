@@ -1,3 +1,4 @@
 .directory
 .idea
 conda_venv
+__pycache__
