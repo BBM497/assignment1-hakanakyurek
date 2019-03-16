@@ -9,6 +9,9 @@ class BoW:
         self.word_count = []
         self.n_gram = 1
 
+    def __str__(self, *args, **kwargs):
+        print("BoW model: n-gram:%, unique words in the bag:%".format(self.n_gram, len(self.bag.keys())))
+
     def train(self, labels, dataset=None, n_gram=1):
         """
         Train the model.
