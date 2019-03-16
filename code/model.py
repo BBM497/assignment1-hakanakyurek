@@ -54,6 +54,7 @@ class BoW:
         # If not in BoW, add it to it
         if condition not in bag:
             bag[condition] = {k: 0 for k in range(unique_label_count)}
+            bag[condition]['count'] = 0
             bag[condition]['next'] = {}
 
         if word is not None:
@@ -64,6 +65,7 @@ class BoW:
 
         # Increase frequency
         bag[condition][label] += 1
+        bag[condition]['count'] += 1
 
     def set_priors(self):
 
@@ -74,5 +76,20 @@ class BoW:
             self.priors[i] = wc / sum(self.word_count)
 
     def probability(self, numerator, denominator):
-        probability = math.log2((numerator + 1) / (denominator + len(self.bag.keys())))
+        probability = math.log10((numerator + 1) / (denominator + len(self.bag.keys())))
         return probability
+
+    def predict(self, data):
+        data = data.split()
+        probability_of_doc = 0
+
+        for i in range(len(data) - (self.n_gram - 1)):
+            phrase = ' '.join(data[i:i + self.n_gram - 1])
+            condition = ''.join(data[i + self.n_gram - 1])
+
+            if condition is ' ':
+                probability_of_doc += self.probability(self.bag[phrase]['count'], len(self.bag.keys()))
+            else:
+                probability_of_doc += self.probability(self.bag[phrase]['count'], self.bag[phrase]['next'][condition])
+
+        pass
