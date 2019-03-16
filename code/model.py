@@ -7,6 +7,7 @@ class BoW:
         self.bag = {}
         self.priors = []
         self.word_count = []
+        self.n_gram = 1
 
     def train(self, labels, dataset=None, n_gram=1):
         """
@@ -16,6 +17,8 @@ class BoW:
         :param n_gram: N-gram value
         :return: returns bag
         """
+        self.n_gram = n_gram
+
         dataset = dataset or []
         unique_label_count = len(set(labels))
         self.word_count = [0] * unique_label_count
@@ -37,11 +40,11 @@ class BoW:
                 else:
                     condition = data[j + n_gram - 1]
                     word = None
-                self.construct(word, condition, label, unique_label_count)
+                self._construct(word, condition, label, unique_label_count)
 
         return self.bag
 
-    def construct(self, word, condition, label, unique_label_count):
+    def _construct(self, word, condition, label, unique_label_count):
 
         bag = self.bag
 
