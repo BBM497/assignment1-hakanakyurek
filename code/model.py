@@ -1,3 +1,5 @@
+import math
+
 
 class BoW:
 
@@ -7,13 +9,13 @@ class BoW:
         self.word_count = []
 
     def train(self, labels, dataset=None, n_gram=1):
-        '''
+        """
         Train the model.
         :param labels: label array for the dataset, each element should be Label enum type.
         :param dataset: 2D array of strings
         :param n_gram: N-gram value
         :return: returns bag
-        '''
+        """
         dataset = dataset or []
         unique_label_count = len(set(labels))
         self.word_count = [0] * unique_label_count
@@ -64,3 +66,7 @@ class BoW:
         for i in self.word_count:
             wc = self.word_count[i]
             self.priors[i] = wc / sum(self.word_count)
+
+    def probability(self, numerator, denominator):
+        probability = math.log2((numerator + 1) / (denominator + len(self.bag.keys())))
+        return probability
