@@ -87,9 +87,19 @@ class BoW:
             phrase = ' '.join(data[i:i + self.n_gram - 1])
             condition = ''.join(data[i + self.n_gram - 1])
 
-            if condition is ' ':
-                probability_of_doc += self.probability(self.bag[phrase]['count'], len(self.bag.keys()))
+            if phrase not in self.bag:
+                p_count = 0
+                c_count = 0
             else:
-                probability_of_doc += self.probability(self.bag[phrase]['count'], self.bag[phrase]['next'][condition])
+                p_count = self.bag[phrase]['count']
+                if condition not in self.bag[phrase]['next']:
+                    c_count = 0
+                else:
+                    c_count = self.bag[phrase]['next'][condition]
+
+            if condition is ' ':
+                probability_of_doc += self.probability(p_count, len(self.bag.keys()))
+            else:
+                probability_of_doc += self.probability(p_count, c_count)
 
         pass
