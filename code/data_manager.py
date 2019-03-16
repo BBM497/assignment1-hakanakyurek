@@ -24,37 +24,33 @@ punctuations = {'!': '!',
 class Label(enum.Enum):
     HAMILTON = 0
     MADISON = 1
+    UNKNOWN = 2
 
 
-def read(path=''):
-    train_dataset = []
-    train_labels = []
-    test_dataset = []
-    test_labels = []
+def read(data_list, path='./'):
+    dataset = []
+    labels = []
 
-    train_path = path + 'Train/'
-    for file in os.listdir(train_path):
+    for file in os.listdir(path):
 
-        file = open(train_path + file, 'r')
-        lines = file.readlines()
+        if int(file.split('.')[0]) in data_list:
 
-        train_labels.append(Label.HAMILTON if lines[0] == 'HAMILTON \n' else Label.MADISON)
-        train_dataset.append(lines[1])
+            file = open(path + file, 'r')
+            lines = file.readlines()
 
-        file.close()
+            if lines[0] == 'HAMILTON\n':
+                label = Label.HAMILTON
+            elif lines[0] == 'MADISON\n':
+                label = Label.MADISON
+            else:
+                label = Label.UNKNOWN
 
-    test_path = path + 'Test/'
-    for file in os.listdir(test_path):
+            labels.append(label)
+            dataset.append(lines[1])
 
-        file = open(test_path + file, 'r')
-        lines = file.readlines()
+            file.close()
 
-        test_labels.append(Label.HAMILTON if lines[0] == 'HAMILTON \n' else Label.MADISON)
-        test_dataset.append(lines[1])
-
-        file.close()
-
-    return train_dataset, train_labels, test_dataset, test_labels
+    return dataset, labels
 
 
 def pre_process(dataset, n_gram=1, remove_stopwords=False):
