@@ -105,11 +105,6 @@ def filter_stopwords(dataset):
 
 def filter_punctuation(dataset, x):
 
-    if x != 0:
-        for key in punctuations.keys(): punctuations[key] = x * end_token + punctuations[key] + x * start_token
-    else:
-        for key in punctuations.keys(): punctuations[key] = ' ' + punctuations[key]
-
     trantab = str.maketrans(punctuations)
     for i in range(len(dataset)):
 
@@ -117,6 +112,15 @@ def filter_punctuation(dataset, x):
         pass
     return dataset
 
+
+def update_punctuations(n_gram):
+
+    x = (n_gram - 1)
+
+    if x != 0:
+        for key in punctuations.keys(): punctuations[key] = x * end_token + punctuations[key] + x * start_token
+    else:
+        for key in punctuations.keys(): punctuations[key] = ' ' + punctuations[key]
 
 def filter_shortform(dataset):
 
