@@ -38,9 +38,9 @@ def read(data_list, path='./'):
             file = open(path + file, 'r')
             lines = file.readlines()
 
-            if lines[0] == 'HAMILTON\n':
+            if lines[0] == 'HAMILTON \n':
                 label = Label.HAMILTON
-            elif lines[0] == 'MADISON\n':
+            elif lines[0] == 'MADISON \n':
                 label = Label.MADISON
             else:
                 label = Label.UNKNOWN
