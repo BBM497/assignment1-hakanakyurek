@@ -99,3 +99,8 @@ class BoW:
             predictions.append(self.predict(data))
 
         return predictions
+
+    @staticmethod
+    def scale_to_one(list_of_smt):
+        return [x/sum(list_of_smt) for x in list_of_smt]
+
