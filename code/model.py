@@ -1,5 +1,5 @@
 import math
-from data_manager import Label
+import data_manager
 
 
 class BoW:
@@ -104,3 +104,31 @@ class BoW:
     def scale_to_one(list_of_smt):
         return [x/sum(list_of_smt) for x in list_of_smt]
 
+    @staticmethod
+    def _pick(random_number, list_of_smt):
+        temp, i = 0, 0
+        while temp < random_number:
+            temp += list_of_smt[i]
+            i += 1
+
+        return i - 1
+
+    def generate(self, max_words=30):
+
+        from random import random
+
+        essay = (self.n_gram - 1) * data_manager.start_token
+        current_words = 0
+
+        while current_words < max_words:
+            random_number = random()
+            current = ' '.join(essay.split()[(-self.n_gram + 1):])
+            print(self.bag[current]['next'])
+            scaled_probabilities = self.scale_to_one(self.bag[current]['next'].values())
+
+            i = self._pick(random_number, scaled_probabilities)
+            next_word = list(self.bag[current]['next'].keys())[i]
+
+            essay += ' ' + next_word
+            if next_word != data_manager.start_token or next_word != data_manager.end_token:
+                current_words += 1
