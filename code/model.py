@@ -56,7 +56,7 @@ class BoW:
 
         if word is not None:
             if word not in bag[condition]['next']:
-                bag[condition]['next'][word] = 0
+                bag[condition]['next'][word] = 1
             else:
                 bag[condition]['next'][word] += 1
 
