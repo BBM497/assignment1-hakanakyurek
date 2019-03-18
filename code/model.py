@@ -130,8 +130,9 @@ class BoW:
                 next_word = list(self.bag[current]['next'].keys())[i]
 
                 essay += ' ' + next_word
-                if next_word != data_manager.start_token or next_word != data_manager.end_token \
-                        or next_word not in data_manager.punctuations:
+                next_word = ' ' + next_word + ' '
+                if next_word != data_manager.start_token and next_word != data_manager.end_token \
+                        and next_word not in data_manager.punctuations:
                     current_words += 1
         else:
             while current_words < max_words:
