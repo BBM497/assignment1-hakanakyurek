@@ -119,16 +119,31 @@ class BoW:
 
         essay = (self.n_gram - 1) * data_manager.start_token
         current_words = 0
+        if self.n_gram > 1:
+            while current_words < max_words:
+                random_number = random()
+                current = ' '.join(essay.split()[(-self.n_gram + 1):])
 
-        while current_words < max_words:
-            random_number = random()
-            current = ' '.join(essay.split()[(-self.n_gram + 1):])
-            print(self.bag[current]['next'])
-            scaled_probabilities = self.scale_to_one(self.bag[current]['next'].values())
+                scaled_probabilities = self.scale_to_one(self.bag[current]['next'].values())
 
-            i = self._pick(random_number, scaled_probabilities)
-            next_word = list(self.bag[current]['next'].keys())[i]
+                i = self._pick(random_number, scaled_probabilities)
+                next_word = list(self.bag[current]['next'].keys())[i]
 
-            essay += ' ' + next_word
-            if next_word != data_manager.start_token or next_word != data_manager.end_token:
-                current_words += 1
+                essay += ' ' + next_word
+                if next_word != data_manager.start_token or next_word != data_manager.end_token \
+                        or next_word not in data_manager.punctuations:
+                    current_words += 1
+        else:
+            while current_words < max_words:
+                random_number = random()
+
+                scaled_probabilities = self.scale_to_one([self.bag[x]['count'] for x in self.bag])
+
+                i = self._pick(random_number, scaled_probabilities)
+                next_word = list(self.bag.keys())[i]
+
+                essay += ' ' + next_word
+                if next_word not in data_manager.punctuations:
+                    current_words += 1
+
+        return essay
