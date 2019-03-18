@@ -148,3 +148,6 @@ class BoW:
                     current_words += 1
 
         return essay
+
+    def perplexity(self, probability):
+        return math.pow(2.0, -probability / len(self.bag.keys()))

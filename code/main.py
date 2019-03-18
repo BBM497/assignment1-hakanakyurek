@@ -7,8 +7,11 @@ MADISON_TRAIN_LIST = [10, 14, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 58
 MADISON_TEST_LIST = [47, 48, 58]
 TEST_LIST = [49, 50, 51, 52, 53, 54, 55, 56, 57, 62, 63]
 
+
 dataset_path = '../dataset/'
-n = 1
+n = 2
+# Which documents are the test data?
+test = HAMILTON_TEST_LIST
 
 data_manager.update_punctuations(n)
 
@@ -22,7 +25,8 @@ training_data_madison = data_manager.read(MADISON_TRAIN_LIST, dataset_path)
 train_labels_madison = training_data_madison[1]
 train_dataset_madison = training_data_madison[0]
 
-test_data = data_manager.read(TEST_LIST, dataset_path)
+# Test Data
+test_data = data_manager.read(test, dataset_path)
 test_labels = test_data[1]
 test_dataset = test_data[0]
 
@@ -48,5 +52,7 @@ for i in range(len(ham_predictions)):
         predictions.append(data_manager.Label.MADISON)
     else:
         predictions.append(data_manager.Label.HAMILTON)
+
+    print(model_hamilton.perplexity(ham_predictions[i]) < model_hamilton.perplexity(mad_predictions[i]))
 
 print(predictions)
