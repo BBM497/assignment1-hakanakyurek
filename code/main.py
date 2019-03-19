@@ -11,7 +11,7 @@ TEST_LIST = [49, 50, 51, 52, 53, 54, 55, 56, 57, 62, 63]
 dataset_path = '../dataset/'
 n = 1
 # Which documents are the test data?
-test_list = HAMILTON_TEST_LIST
+test_list = TEST_LIST
 
 data_manager.update_punctuations(n)
 
@@ -44,7 +44,6 @@ def train():
 def test(model_hamilton, model_madison):
     # Test Data
     test_data = data_manager.read(test_list, dataset_path)
-    test_labels = test_data[1]
     test_dataset = test_data[0]
 
     test_dataset = data_manager.pre_process(test_dataset, n_gram=n)
@@ -63,4 +62,44 @@ def test(model_hamilton, model_madison):
     print(predictions)
 
 
-train()
+def perplexity(name='hamilton'):
+    # 1
+    test_data = data_manager.read(test_list, dataset_path)
+    test_dataset = test_data[0]
+    test_dataset = data_manager.pre_process(test_dataset, n_gram=1)
+
+    model_1 = BoW.load(path='../models/', name='model_' + name + '_' + str(1))
+    predictions_1 = model_1.test(test_dataset)
+    # 2
+    test_data = data_manager.read(test_list, dataset_path)
+    test_dataset = test_data[0]
+    test_dataset = data_manager.pre_process(test_dataset, n_gram=2)
+
+    model_2 = BoW.load(path='../models/', name='model_' + name + '_' + str(2))
+    predictions_2 = model_2.test(test_dataset)
+    # 3
+    test_data = data_manager.read(test_list, dataset_path)
+    test_dataset = test_data[0]
+    test_dataset = data_manager.pre_process(test_dataset, n_gram=3)
+
+    model_3 = BoW.load(path='../models/', name='model_' + name + '_' + str(3))
+    predictions_3 = model_3.test(test_dataset)
+
+    for i in range(len(predictions_1)):
+        if model_1.perplexity(predictions_1[i]) < model_2.perplexity(predictions_2[i]) and \
+                model_1.perplexity(predictions_1[i]) < model_3.perplexity(predictions_3[i]):
+            print(1)
+        elif model_2.perplexity(predictions_2[i]) < model_1.perplexity(predictions_1[i]) and \
+                model_2.perplexity(predictions_2[i]) < model_3.perplexity(predictions_3[i]):
+            print(2)
+        elif model_3.perplexity(predictions_3[i]) < model_2.perplexity(predictions_2[i]) and \
+                model_3.perplexity(predictions_3[i]) < model_1.perplexity(predictions_1[i]):
+            print(3)
+
+
+# train()
+# model_hamilton = BoW.load(path='../models/', name='model_hamilton_' + str(n))
+# model_madison = BoW.load(path='../models/', name='model_madison_' + str(n))
+# test(model_hamilton, model_madison)
+
+perplexity(name='hamilton')
