@@ -9,50 +9,58 @@ TEST_LIST = [49, 50, 51, 52, 53, 54, 55, 56, 57, 62, 63]
 
 
 dataset_path = '../dataset/'
-n = 2
+n = 1
 # Which documents are the test data?
-test = HAMILTON_TEST_LIST
+test_list = HAMILTON_TEST_LIST
 
 data_manager.update_punctuations(n)
 
-# Hamilton data
-training_data = data_manager.read(HAMILTON_TRAIN_LIST, dataset_path)
-train_labels = training_data[1]
-train_dataset = training_data[0]
 
-# Madison data
-training_data_madison = data_manager.read(MADISON_TRAIN_LIST, dataset_path)
-train_labels_madison = training_data_madison[1]
-train_dataset_madison = training_data_madison[0]
+def train():
+    # Hamilton data
+    training_data = data_manager.read(HAMILTON_TRAIN_LIST, dataset_path)
+    train_dataset = training_data[0]
 
-# Test Data
-test_data = data_manager.read(test, dataset_path)
-test_labels = test_data[1]
-test_dataset = test_data[0]
+    # Madison data
+    training_data_madison = data_manager.read(MADISON_TRAIN_LIST, dataset_path)
+    train_dataset_madison = training_data_madison[0]
 
-test_dataset = data_manager.pre_process(test_dataset, n_gram=n)
+    model1 = BoW()
+    model2 = BoW()
 
-model_hamilton = BoW()
-model_madison = BoW()
+    # Hamilton train
+    train_dataset = data_manager.pre_process(train_dataset, n_gram=n)
+    model1.train(train_dataset, n_gram=n)
 
-# Hamilton train
-train_dataset = data_manager.pre_process(train_dataset, n_gram=n)
-model_hamilton.train(train_dataset, n_gram=n)
-ham_predictions = model_hamilton.test(test_dataset)
-# print(model_hamilton.generate())
+    model1.save(path='../models/', name='model_hamilton_' + str(n))
 
-# Madison train
-train_dataset_madison = data_manager.pre_process(train_dataset_madison, n_gram=n)
-model_madison.train(train_dataset_madison, n_gram=n)
-mad_predictions = model_madison.test(test_dataset)
+    # Madison train
+    train_dataset_madison = data_manager.pre_process(train_dataset_madison, n_gram=n)
+    model2.train(train_dataset_madison, n_gram=n)
 
-predictions = []
-for i in range(len(ham_predictions)):
-    if ham_predictions[i] < mad_predictions[i]:
-        predictions.append(data_manager.Label.MADISON)
-    else:
-        predictions.append(data_manager.Label.HAMILTON)
+    model2.save(path='../models/', name='model_madison_' + str(n))
 
-    print(model_hamilton.perplexity(ham_predictions[i]) < model_hamilton.perplexity(mad_predictions[i]))
 
-print(predictions)
+def test(model_hamilton, model_madison):
+    # Test Data
+    test_data = data_manager.read(test_list, dataset_path)
+    test_labels = test_data[1]
+    test_dataset = test_data[0]
+
+    test_dataset = data_manager.pre_process(test_dataset, n_gram=n)
+
+    ham_predictions = model_hamilton.test(test_dataset)
+
+    mad_predictions = model_madison.test(test_dataset)
+
+    predictions = []
+    for i in range(len(ham_predictions)):
+        if ham_predictions[i] < mad_predictions[i]:
+            predictions.append(data_manager.Label.MADISON)
+        else:
+            predictions.append(data_manager.Label.HAMILTON)
+
+    print(predictions)
+
+
+train()

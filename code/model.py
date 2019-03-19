@@ -151,3 +151,19 @@ class BoW:
 
     def perplexity(self, probability):
         return math.pow(2.0, -probability / len(self.bag.keys()))
+
+    def save(self, path='./', name='model'):
+
+        import pickle
+        full_path = path + name
+        with open(full_path, 'wb') as handle:
+            pickle.dump(self, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    @staticmethod
+    def load(path='./', name='model'):
+
+        import pickle
+
+        full_path = path + name
+        with open(full_path, 'rb') as handle:
+            return pickle.load(handle)
