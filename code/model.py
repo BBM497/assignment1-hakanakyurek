@@ -10,9 +10,6 @@ class BoW:
         self.word_count = 0
         self.n_gram = 1
 
-    def __str__(self, *args, **kwargs):
-        print("BoW model: n-gram: {}, unique words in the bag: {}".format(self.n_gram, len(self.bag.keys())))
-
     def train(self, dataset=None, n_gram=1):
         """
         Train the model.
@@ -147,7 +144,9 @@ class BoW:
                 if next_word not in data_manager.punctuations:
                     current_words += 1
 
-        return essay
+        essay = essay.replace(data_manager.start_token.split()[0], '')
+        essay = essay.replace(data_manager.end_token.split()[0], '')
+        return ' '.join(essay.split())
 
     def perplexity(self, probability):
         return math.pow(2.0, -probability / len(self.bag.keys()))
