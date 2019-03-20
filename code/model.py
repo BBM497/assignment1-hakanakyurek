@@ -21,20 +21,23 @@ class BoW:
 
         dataset = dataset or []
 
-        # Loop through the data
+        # Loop through the dataset
         for i in range(len(dataset)):
 
             data = dataset[i]
-
+            # update total word count
             self.word_count += len(data.split(' '))
 
             data = list(filter(None, data.split(' ')))
 
             for j in range(len(data) - (n_gram - 1)):
+                # loop through the data
                 if n_gram != 1:
+                    # if bigram or trigram
                     condition = ' '.join(data[j:j + n_gram - 1])
                     word = data[j + n_gram - 1]
                 else:
+                    # if unigram
                     condition = data[j + n_gram - 1]
                     word = None
                 self._construct(word, condition)
@@ -45,12 +48,12 @@ class BoW:
 
         bag = self.bag
 
-        # If not in BoW, add it to it
+        # If not in bag, create a new entry
         if condition not in bag:
             bag[condition] = {}
             bag[condition]['count'] = 0
             bag[condition]['next'] = {}
-
+        # update the next dictionary
         if word is not None:
             if word not in bag[condition]['next']:
                 bag[condition]['next'][word] = 1
@@ -84,7 +87,7 @@ class BoW:
                     c_count = 0
                 else:
                     c_count = self.bag[condition]['next'][phrase]
-
+            # update the probability
             probability_of_doc += self.probability(p_count, c_count)
 
         return probability_of_doc
@@ -117,33 +120,37 @@ class BoW:
         essay = (self.n_gram - 1) * data_manager.start_token
         current_words = 0
         if self.n_gram > 1:
+            # if bi or trigram
             while current_words < max_words:
                 random_number = random()
                 current = ' '.join(essay.split()[(-self.n_gram + 1):])
-
+                # scale probabilities between 0-1
                 scaled_probabilities = self.scale_to_one(self.bag[current]['next'].values())
-
+                # pick a word from the vocabulary
                 i = self._pick(random_number, scaled_probabilities)
                 next_word = list(self.bag[current]['next'].keys())[i]
-
+                # add word to essay
                 essay += ' ' + next_word
                 next_word = ' ' + next_word + ' '
+                # check whether punctuation or token
                 if next_word != data_manager.start_token and next_word != data_manager.end_token \
                         and next_word not in data_manager.punctuations:
                     current_words += 1
         else:
             while current_words < max_words:
+                # if unigram
                 random_number = random()
-
+                # scale probabilities between 0-1
                 scaled_probabilities = self.scale_to_one([self.bag[x]['count'] for x in self.bag])
-
+                # pick a word from the vocabulary
                 i = self._pick(random_number, scaled_probabilities)
                 next_word = list(self.bag.keys())[i]
-
+                # add word to essay
                 essay += ' ' + next_word
+                # check whether punctuation
                 if next_word not in data_manager.punctuations:
                     current_words += 1
-
+        # remove tokens from the essay
         essay = essay.replace(data_manager.start_token.split()[0], '')
         essay = essay.replace(data_manager.end_token.split()[0], '')
         return ' '.join(essay.split())
