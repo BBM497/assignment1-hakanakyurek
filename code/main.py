@@ -9,7 +9,7 @@ TEST_LIST = [49, 50, 51, 52, 53, 54, 55, 56, 57, 62, 63]
 
 
 dataset_path = '../dataset/'
-n = 2
+n = 3
 # Which documents are the test data?
 test_list = MADISON_TEST_LIST
 
@@ -89,7 +89,8 @@ def perplexity(name='hamilton'):
         first = model_1.perplexity(predictions_1[i])
         second = model_2.perplexity(predictions_2[i])
         third = model_3.perplexity(predictions_3[i])
-        print(first, second, third) 
+        print('{0:.2f} {1:.2f} {2:.2f}'.format(first, second, third))
+        print(first, second, third)
        
         if first < second and \
                 first < third:
@@ -105,6 +106,7 @@ def perplexity(name='hamilton'):
 # train()
 model_hamilton = BoW.load(path='../models/', name='model_hamilton_' + str(n))
 model_madison = BoW.load(path='../models/', name='model_madison_' + str(n))
-test(model_hamilton, model_madison)
-# print(model_madison.generate())
-perplexity(name='hamilton')
+# test(model_hamilton, model_madison)
+print(model_hamilton.generate())
+
+# perplexity(name='hamilton')

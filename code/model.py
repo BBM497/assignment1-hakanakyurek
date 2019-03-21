@@ -137,7 +137,7 @@ class BoW:
                         and next_word not in data_manager.punctuations:
                     current_words += 1
         else:
-            while current_words < max_words:
+            while current_words <= max_words:
                 # if unigram
                 random_number = random()
                 # scale probabilities between 0-1
