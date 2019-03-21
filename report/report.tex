@@ -1,10 +1,12 @@
 \documentclass{article}
 
-
+\usepackage{caption} 
+\captionsetup[table]{skip=10pt}
 \usepackage{arxiv}
 \usepackage{graphicx}
 \usepackage{amsmath}
-
+\usepackage{float}
+\usepackage{subfig}
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
@@ -86,7 +88,67 @@ There are some number of modifications to dataset in order to process it better.
 Furthermore, I have also reduced the number of words in the dictionary by shortening phrases like 'I am', 'You were not', ' He would not'. Accordingly, this helped me to reduce the complexity and get better results in both tasks. Additionally, all data is represented in lower-case except start and end tokens to again decrease the number of words in the dictionary.
 
 \section{Results}
+My results in essay generation are nothing surprising. Uni-gram models generate completely garbage essays, while bi-gram models generate a little bit better tri-gram models are superior than bi-gram models in that respect. More essays can be found in 'essays.txt' in root folder of the project.
 
+Uni-gram model:
+\begin{quote}
+. representatives the . for should fellowcitizens be . once security in ; resides relief , ; states , less are than it so legal states enterprising pointed the . , constitution , lain which and particular which be retrospective
+\end{quote}
+
+Bi-gram model:
+\begin{quote}
+that this quarter of the immediate interest , not likely to the legislative and of the sources from an overcurious discussion and consuls into foreign jurisdiction left in each other
+\end{quote}
+
+Tri-gram model:
+\begin{quote}
+therefore , for the twelve states . besides other impediments , which supposes a pre-existing government of a particular state , taxes on articles imported from other circumstances ; if
+\end{quote}
+Although what the latter models generate are somewhat meaningful, because of the randomness the topic of start and  end of the sentences do not match at all. Models remembering at most 2 words while generating is also a factor. We can also see in uni-gram there are loads of punctuations generated, while in bi and tri-gram models number of punctuations are severely reduced. We can also see in uni-gram model doesn't know what words should be at the start and which words should be at the end. This also makes uni-gram generations completely meaningless.
+
+The results of articles 9, 11, 12, 47, 48, 58 are represented in Table 1. The results show us that the tri-gram models are also superior than others when classifying documents. While uni-gram models fail to label Hamilton's articles they are still able to label Madison's correctly. It seems that uni-gram is unable to get any semantic meaning out of the articles and Madison's usage of punctuations increase her probability scores. Because when I switch to bi-gram it correctly classify 2 of Hamilton's articles.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|llllll}
+\hline
+    & \multicolumn{1}{l|}{9} & \multicolumn{1}{l|}{11} & \multicolumn{1}{l|}{12} & \multicolumn{1}{l|}{47} & \multicolumn{1}{l|}{48} & \multicolumn{1}{l|}{58} \\ \hline
+uni & -                      & -                       & -                       & +                       & +                       & +                       \\ \cline{1-1}
+bi  & +                      & -                       & +                       & +                       & +                       & +                       \\ \cline{1-1}
+tri & +                      & +                       & +                       & +                       & +                       & +                       \\ \cline{1-1}
+\end{tabular}
+\caption{Test article results(+ match, - mismatch)}
+\end{table}
+
+We can also see that all of the Madison's articles are labelled correctly. It may be because Hamilton's articles are not fit to be classified with n-gram models while Madison's are suited better for n-gram or it may be because Madison chose to use punctuations much more than Hamilton and as result we see Hamilton's articles misclassified in uni-gram.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+uni  & bi     & tri   \\ \hline
+50\% & 83.3\% & 100\% \\ \hline
+\end{tabular}
+\caption{model accuracies}
+\end{table}
+
+Even without looking to perplexity scores we can see that tri-gram models are obviously better in classification the the other two. Looking at the correct accuracy of the models shown in Table 2, we can easily notice that uni-gram models are inferior to other two, while tri-gram models do an outstanding job.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+   & uni       & bi        & tri         \\
+9  & 5.24-4.43 & 1.89-1.75 & 1.37-1.33   \\
+11 & 4.45-3.83 & 1.76-1.66 & 1.33-1.30   \\
+12 & 6.5-5.37  & 2.09-1.89 & 1.44-1.38   \\
+47 & 3.67-4.25 & 1.63-1.64 & 1.292-1.291 \\
+48 & 6.73-8.36 & 2.06-2.02 & 1.46-1.44   \\
+58 & 4.06-4.76 & 1.69-1.72 & 1.322-1.323
+\end{tabular}
+\caption{Perplexity values(hamilton-madison)}
+\end{table}
+
+Looking at the perplexity scores in Table 3, it is obvious that tri-gram models do a better job than the other two. On uni-gram all models have really high scores, but on bi-gram those scores drop rapidly. Similarly, on tri-gram every model generated by both user have lower scores than other n-grams.
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
